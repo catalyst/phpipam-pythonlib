@@ -291,6 +291,37 @@ class PHPIPAM:
 
         return self.query_phpipam(**data)
 
+    def read_addresses(self, format="ip", id=None, subnet_id=None):
+        """Fetch addresses
+
+        Retrieve list of addresses by specified filter
+
+        Parameters
+            format - string output format (ip/decimal)
+            id - optional int address id
+            subnet_id - optional int ssubnet_id
+        Returns
+            JSON
+            {
+                "success":true,
+                "data": [
+                    {
+                        ...address data...
+                    },
+                    ...
+                ]
+            }
+        """
+        data = {"controller": "addresses", "action": "read", "format": format}
+        if not id and not subnet_id:
+            data.update({"all": True})
+        elif id:
+            data.update({"id": id})
+        elif subnet_id:
+            data.update({"subnetId": subnet_id})
+
+        return self.query_phpipam(**data)
+
     def create_subnet(self, section_id, subnet, mask, format="ip", master_subnet_id=0, vrf_id=0, vlan_id=0, allow_requests=0, show_name=0, ping_subnet=0, permissions=None, description=None):
         """Create subnet
 
