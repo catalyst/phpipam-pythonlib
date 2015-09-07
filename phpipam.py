@@ -49,17 +49,21 @@ def decrypt(key, encoded):
     return plaintext
 
 class PHPIPAM:
-    def __init__(self, url, api_id, api_key):
+    def __init__(self, url, api_id, api_key, path='', https=False):
         """Constructor
 
         Parameters
             url - string base url to phpipam server
             api_id - string phpipam api id
             api_key - string phpipam api key
+            path - string prefix for URL
+            https? - boolean set to True for HTTPS, False otherwise
         """
         self.url = url
         self.api_id = api_id
         self.api_key = api_key
+        self.path = path
+        self.https = https
 
     def query_phpipam(self, **kwargs):
         """Query PHPIPAM API
@@ -83,8 +87,11 @@ class PHPIPAM:
         params = urllib.urlencode(data)
 
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-        conn = httplib.HTTPConnection(self.url)
-        conn.request("POST", "/api/index.php", params, headers)
+        if self.https:
+            conn = httplib.HTTPSConnection(self.url)
+        else:
+            conn = httplib.HTTPConnection(self.url)
+        conn.request("POST", self.path + "/api/index.php", params, headers)
         response = conn.getresponse()
 
         data = response.read()
